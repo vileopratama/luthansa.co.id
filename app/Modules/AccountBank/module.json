@@ -1,0 +1,8 @@
+{
+	"name": "Account Bank",
+	"slug": "account-bank",
+	"namespace": "AccountBank",
+	"version": "1.0.0",
+	"description": "Account Bank",
+	"enabled": true
+}

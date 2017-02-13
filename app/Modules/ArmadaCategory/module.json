@@ -1,0 +1,8 @@
+{
+	"name": "Armada Category",
+	"slug": "armada-category",
+	"namespace": "ArmadaCategory",
+	"version": "1.0.0",
+	"description": "Armada",
+	"enabled": true
+}

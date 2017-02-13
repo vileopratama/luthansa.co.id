@@ -1,0 +1,8 @@
+{
+	"name": "Customer",
+	"slug": "customer",
+	"namespace": "Customer",
+	"version": "1.0.0",
+	"description": "Customer",
+	"enabled": true
+}

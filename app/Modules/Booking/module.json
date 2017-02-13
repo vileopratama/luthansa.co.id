@@ -1,0 +1,8 @@
+{
+	"name": "Booking",
+	"slug": "booking",
+	"namespace": "Booking",
+	"version": "1.0.0",
+	"description": "Booking Module",
+	"enabled": true
+}

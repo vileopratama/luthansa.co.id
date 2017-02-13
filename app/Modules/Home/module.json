@@ -1,0 +1,8 @@
+{
+	"name": "Home",
+	"slug": "home",
+	"namespace": "Home",
+	"version": "1.0.0",
+	"description": "Home",
+	"enabled": true
+}

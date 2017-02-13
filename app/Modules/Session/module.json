@@ -1,0 +1,8 @@
+{
+	"name": "Session",
+	"slug": "session",
+	"namespace": "Session",
+	"version": "1.0.0",
+	"description": "Session",
+	"enabled": true
+}

@@ -1,0 +1,8 @@
+{
+	"name": "Sales Invoice",
+	"slug": "sales-invoice",
+	"namespace": "SalesInvoice",
+	"version": "1.0.0",
+	"description": "Sales Invoice",
+	"enabled": true
+}

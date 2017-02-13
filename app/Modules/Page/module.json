@@ -1,0 +1,8 @@
+{
+	"name": "Page",
+	"slug": "page",
+	"namespace": "Page",
+	"version": "1.0.0",
+	"description": "Page",
+	"enabled": true
+}

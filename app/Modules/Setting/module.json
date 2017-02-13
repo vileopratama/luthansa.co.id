@@ -1,0 +1,8 @@
+{
+	"name": "Setting",
+	"slug": "setting",
+	"namespace": "Setting",
+	"version": "1.0.0",
+	"description": "Setting",
+	"enabled": true
+}

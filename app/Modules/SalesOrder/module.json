@@ -1,0 +1,8 @@
+{
+	"name": "Sales Order",
+	"slug": "sales-order",
+	"namespace": "SalesOrder",
+	"version": "1.0.0",
+	"description": "Sales order",
+	"enabled": true
+}
