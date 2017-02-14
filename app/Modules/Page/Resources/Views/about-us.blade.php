@@ -11,9 +11,9 @@
        		<div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1">
        			<div class="blog-list">
 					<div class="blog-list-entry style-2">
-						<div class="blog-list-top">
+						<!--<div class="blog-list-top">
 							<img class="img-responsive img-full" src="img/detail/blog_2.jpg" alt="">
-						</div>
+						</div>-->
 						<h4 class="text-justify blog-list-title"><a class="color-dark-2 link-dr-blue-2" href="#">Riwayat Singkat Perusahaan</a></h4>
 						<div class="blog-list-text color-grey-3">
 							<p class="text-justify">

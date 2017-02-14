@@ -148,10 +148,10 @@ class BookingController extends Controller {
 					$customer->mobile_number = $request->get('mobile_number');
 					$customer->password = bcrypt($password_decrypt); 
 					$customer->password_decrypt = $password_decrypt;
-					$customer->type = $request->get('company_name')!= "" ? 'Corporate' : 'Individual';
+					$customer->type = !empty($request->get('company_name')) ? 'Corporate' : 'Individual';
 					$customer->is_active = 0;
 					$customer->created_at = date('Y-m-d H:i:s');
-					$customer->created_by = 1;
+					$customer->created_by = 0;
 					$customer->save();
 					//init id
 					$customer_id = $customer->id;

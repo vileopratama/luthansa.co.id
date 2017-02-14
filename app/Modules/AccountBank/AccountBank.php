@@ -2,15 +2,15 @@
 namespace App\Modules\AccountBank;
 
 use Illuminate\Database\Eloquent\Model;
-use Kyslik\ColumnSortable\Sortable;
+//use Kyslik\ColumnSortable\Sortable;
 
 class AccountBank extends Model{
-	use Sortable;
+	//use Sortable;
     protected $table = 'accounts';
     protected $fillable = ['account_no','account_name','bank_id'];
 	protected $primaryKey = "id";
     public $timestamps = false;
-    public $sortable = ['id', 'account_no','account_name'];
+    //public $sortable = ['id', 'account_no','account_name'];
 	
 	public static function list_dropdown() {
 		$account_banks = self::join('banks','banks.id','=','accounts.bank_id')

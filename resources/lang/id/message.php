@@ -24,6 +24,7 @@ return [
 	'luthansa confirm payment info' => "Konfirmasi pembayaran akan dicek oleh tim admin kami 1X24 jam , pastikan nomor dan nama rekening valid serta pembayaran minimum 50%, yang akan dihitung sebagai DP (Down Payment)",
 	'luthansa order notice' => "Terima kasih anda telah melakukan Order di Luthansa Group Tour and Transport, Total pembayaran akan dikalkulasikan oleh Bagian Admin kami pada saat anda selesai order , harap mengisi No Handphone & alamat email dengan benar, kami akan informasikan melalui nomor handphone atau email, Terima kasih.",
 	'luthansa registered user' => "Terima kasih telah melakukan pendaftaran di Luthansa group & transport ",
+	'luthansa user administration' => "Apabila anda merasa belum pernah mendaftar registrasi , tetapi muncul notif untuk login, berarti sebelumnya email anda telah tercatat melakukan order kepada kami sebelumnya melalui admin kami , silahkan reset password anda untuk mendapatkan password baru !",
 	'name is required' => "Nama Lengkap wajib diisi",
 	'order has been successfully' => "Anda berhasil melakukan order ,Terima kasih  !",
 	'password is required' => "Password wajib diisi",

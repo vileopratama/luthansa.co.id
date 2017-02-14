@@ -35,6 +35,11 @@
 		</div> 
 		
 		<div class="row">
+			<div class=col-md-12>
+					<div class="alert alert-info">
+				  	<strong>{!! Lang::get('global.info') !!} </strong> {!! Lang::get('message.luthansa user administration') !!}
+				</div>
+			</div>
 			<div class="col-md-12">
 				<div class="panel panel-primary">
 					<div class="panel-heading">{!! Lang::get('global.customer form') !!}</div>

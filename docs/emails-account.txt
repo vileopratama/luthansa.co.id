@@ -1,0 +1,13 @@
+no-reply@luthansa.co.id
+NO+Egd2ztEkn
+
+mail.luthansa.co.id
+port 26
+tls
+
+MAIL_DRIVER=smtp
+MAIL_HOST=mail.kreston-indonesia.co.id
+MAIL_PORT=26
+MAIL_USERNAME=noreply@kreston-indonesia.co.id
+MAIL_PASSWORD=#hBkcbip$vSv
+MAIL_ENCRYPTION=tls

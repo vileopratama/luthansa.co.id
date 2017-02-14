@@ -105,7 +105,7 @@ class SessionController extends Controller {
 				$customer->request_forgot_password = 1;	
 				$customer->remember_token = substr( md5(rand()), 0, 30);
 				$customer->updated_at = date('Y-m-d H:i:s');
-				$customer->updated_by = 1;
+				$customer->updated_by = 0;
 				$customer->save();
 				
 				$params = array(
@@ -180,9 +180,11 @@ class SessionController extends Controller {
 	}
 	
 	public function reset_password($remember_token) {
-		$customer = Customer::where(['remember_token' => $remember_token,'request_forgot_password' => 1])->first();
+		$customer = Customer::where(['remember_token' => $remember_token])
+		->first();
+		
 		if(!$customer) {
-			Redirect::intended('/',301);
+			return Redirect::intended('/',301);
 		} 
 		
 		return Theme::view('session::reset-password',array(

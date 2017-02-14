@@ -107,11 +107,11 @@ class CustomerController extends Controller {
 		));
 	}
 	
-	public function download_invoice_sales_order($id) {
-				$id = Crypt::decrypt($id);
+	public function download_invoice_sales_order($id,$output="D") {
+		$id = Crypt::decrypt($id);
 		$margin_left = 15;
 		$sales_order = SalesOrder::join('customers','customers.id','=','sales_orders.customer_id')
-			->select(['sales_orders.*','customers.name as customer_name','customers.address as customer_address','customers.phone_number','customers.mobile_number'])
+			->select(['sales_orders.*','customers.name as customer_name','customers.address as customer_address','customers.phone_number','customers.fax_number','customers.mobile_number as customer_mobile_number','customers.city','customers.zip_code'])
 			->selectRaw("DATE_FORMAT(order_date,'%d/%m/%Y') as order_date,DATE_FORMAT(due_date,'%d/%m/%Y') as due_date")
 			->selectRaw("DATE_FORMAT(booking_from_date,'%d %M %Y') as booking_from_date,DATE_FORMAT(booking_to_date,'%d %M %Y') as booking_to_date")
 			->where(['sales_orders.id' => $id])
@@ -131,39 +131,54 @@ class CustomerController extends Controller {
 			
 		PDF::SetTitle(Lang::get('global.invoice'));
 		PDF::AddPage('P', 'A4');
+		PDF::SetMargins(10, 10, 10, true);
 		PDF::SetFont('Helvetica','',8,'','false');
 		PDF::setJPEGQuality(100);
 		PDF::SetFillColor(255, 255, 255);
-		PDF::Image(asset('vendor/luthansa/img/logo.png'), 15, 10, 70, 25, 'PNG', 'http://www.luthansa.co.id', '', true, 150, '', false, false, 0, false, false, false);
+		PDF::Image(asset('vendor/luthansa/img/logo.png'), 15, 10, 70, 25, 'PNG', url('/'), '', true, 150, '', false, false, 0, false, false, false);
 		
 		$x=$margin_left;$y=35;
-		PDF::SetFont('Helvetica','B',9,'','false');
+		PDF::SetFont('Helvetica','B',11,'','false');
 		PDF::SetXY($x,$y=$y);
 		PDF::Cell(180,10,strtoupper(Setting::get('company_name')),0,0,'L',false,'',0,10,'T','M');
 		
 		PDF::SetFont('Helvetica','',8,'','false');
-        PDF::SetXY($x,$y=$y+5);
-		PDF::Cell(180,10,Setting::get('company_address').' '.Setting::get('company_city').' '.Setting::get('company_zip_code'),0,0,'L',false,'',0,10,'T','M');
-		PDF::SetXY($x,$y=$y+5);
-		PDF::Cell(180,10,Setting::get('company_telephone_number').' ('.Lang::get('global.hunting').')',0,0,'L',false,'',0,10,'T','M');
-		PDF::SetXY($x,$y=$y+5);
-		PDF::Cell(180,10,Setting::get('company_email'),0,0,'L',false,'',0,10,'T','M');
-		PDF::SetXY($x,$y=$y+5);
-		PDF::Cell(180,10,Setting::get('company_website'),0,0,'L',false,'',0,10,'T','M');
+        PDF::SetXY($x,$y=$y+7);
+		PDF::Cell(180,5,Setting::get('company_address').' '.Setting::get('company_city').' '.Setting::get('company_zip_code'),0,0,'L',false,'',0,5,'T','M');
+        // khusus transport di hide
+        if($sales_order->type != 'Transport') {
+            PDF::SetXY($x, $y = $y + 3);
+            PDF::Cell(180, 5, Setting::get('company_telephone_number') . ' (' . Lang::get('global.hunting') . ')', 0, 0, 'L', false, '', 0, 5, 'T', 'M');
+        }
+
+        PDF::SetXY($x,$y=$y+3);
+		PDF::Cell(180,5,Setting::get('company_email'),0,0,'L',false,'',0,5,'T','M');
+		PDF::SetXY($x,$y=$y+3);
+		PDF::Cell(180,5,Setting::get('company_website'),0,0,'L',false,'',0,5,'T','M');
 		
 		PDF::SetFont('Helvetica','B',14,'','false');
-		PDF::SetXY($x,$y=$y+10);
+		PDF::SetXY($x,$y=$y+7);
 		PDF::Cell(180,10,strtoupper(Lang::get('global.invoice')),0,0,'C',false,'',0,10,'T','M');
 		//column date & invoice
 		PDF::SetFont('Helvetica','',8,'','false');
-		PDF::SetXY($x,$y=$y+10);
+		PDF::SetXY($x,$y=$y+7);
 		PDF::Cell(90,10,strtoupper(Lang::get('global.invoice')).' #'.$sales_order->number,0,0,'L',false,'',0,10,'T','M');
 		PDF::SetXY($x+100,$y=$y);
 		PDF::Cell(90,10,Lang::get('printer.to sir'),0,0,'L',false,'',0,10,'T','M');
 		
 		/* Kepada Yth /**/
         $x=$x;$y=$y;
-        PDF::SetLineStyle(array('width'=>0.3,'color'=>array(0,0,0)));
+        $customer_name = $sales_order->customer_name;
+        $customer_address = $sales_order->customer_address;
+
+        $customer_telephone = $sales_order->phone_number ? Lang::get("printer.telephone").". ".$sales_order->phone_number : "";
+        $customer_fax_number = $sales_order->fax_number ? Lang::get("printer.fax").". ".$sales_order->fax_number : "";
+        $customer_mobile_number = $sales_order->customer_mobile_number ? Lang::get("printer.handphone").". ".$sales_order->customer_mobile_number : "";
+        $customer_city = $sales_order->city.' '.$sales_order->zip_code;
+
+        PDF::MultiCell(62,22,"$customer_name \n$customer_address\n$customer_city\n$customer_telephone $customer_fax_number\n$customer_mobile_number ",1,'L',false,1,$x+118,$y+4,true,0,false,true,22,'T',true);
+
+        /*PDF::SetLineStyle(array('width'=>0.3,'color'=>array(0,0,0)));
         PDF::Line($x+180,$y+2,135,$y+2); //top 
         PDF::Line($x+180,$y+25,135,$y+25); //bottom
         PDF::Line($x+120,$y+2,$x+120,$y+25); //left
@@ -186,54 +201,81 @@ class CustomerController extends Controller {
 		PDF::Cell(10,10,":",0,0,'C',false,'',0,10,'T','M');
 		PDF::Cell(30,10,$sales_order->due_date,0,0,'L',false,'',0,10,'T','M');
 		
+		if($sales_order->type == 'Transport') {
+			$y=$y+20;
+			$x=$margin_left;
+			PDF::MultiCell(60,8,Lang::get('printer.booking from date').' : '.($sales_order->booking_from_date),1,'L',false,1,$x,$y,true,0,false,true,8,'M',false);
+			
+			$x=$x+65;$y=$y;
+			PDF::MultiCell(60,8,Lang::get('printer.booking to date').' : '.($sales_order->booking_to_date),1,'L',false,1,$x,$y,true,0,false,true,8,'M',false);
+			
+			$x=$x+65;$y=$y;
+			PDF::MultiCell(50,8,Lang::get('printer.booking total').' : '.($sales_order->booking_total_days .' '.Lang::get('printer.day')),1,'L',false,1,$x,$y,true,0,false,true,8,'M',false);
+		} else {
+			$y=$y+10;
+		}
 		
-		$y=$y+20;
-		$x=$margin_left;
-		PDF::MultiCell(60,8,Lang::get('printer.booking from date').' : '.($sales_order->booking_from_date),1,'L',false,1,$x,$y,true,0,false,true,8,'M',false);
-		
-		$x=$x+65;$y=$y;
-		PDF::MultiCell(60,8,Lang::get('printer.booking to date').' : '.($sales_order->booking_to_date),1,'L',false,1,$x,$y,true,0,false,true,8,'M',false);
-		
-		$x=$x+65;$y=$y;
-		PDF::MultiCell(50,8,Lang::get('printer.booking total').' : '.($sales_order->booking_total_days .' '.Lang::get('printer.day')),1,'L',false,1,$x,$y,true,0,false,true,8,'M',false);
-		
-		//coloumn header
-		$y=$y+10;
-		$x=$margin_left;
-        PDF::MultiCell(50,8,Lang::get('printer.description'),1,'C',false,1,$x,$y,true,0,false,true,8,'M',false);
-		
-		$x=$x+50;$y=$y;
-        PDF::MultiCell(45,8,Lang::get('printer.car type'),1,'C',false,1,$x,$y,true,0,false,true,8,'M',false);
-        
-		$x=$x+45;$y=$y;
-        PDF::MultiCell(20,8,Lang::get('printer.qty unit'),1,'C',false,1,$x,$y,true,0,false,true,8,'M',false);
-        
-		$x=$x+20;$y=$y;
-        PDF::MultiCell(32,8,Lang::get('printer.price per unit'),1,'C',false,1,$x,$y,true,0,false,true,8,'M',false);
-        
-		$x=$x+32;$y=$y;
-        PDF::MultiCell(33,8,Lang::get('printer.quantity'),1,'C',false,1,$x,$y,true,0,false,true,8,'M',false);
-        
+		//coloumn header transport
+		if($sales_order->type == 'Transport') {
+			$y=$y+10;
+			$x=$margin_left;
+			PDF::MultiCell(50,8,Lang::get('printer.description'),1,'C',false,1,$x,$y,true,0,false,true,8,'M',false);
+			
+			$x=$x+50;$y=$y;
+			PDF::MultiCell(45,8,Lang::get('printer.car type'),1,'C',false,1,$x,$y,true,0,false,true,8,'M',false);
+			
+			$x=$x+45;$y=$y;
+			PDF::MultiCell(20,8,Lang::get('printer.qty unit'),1,'C',false,1,$x,$y,true,0,false,true,8,'M',false);
+			
+			$x=$x+20;$y=$y;
+			PDF::MultiCell(32,8,Lang::get('printer.price per unit'),1,'C',false,1,$x,$y,true,0,false,true,8,'M',false);
+			
+			$x=$x+32;$y=$y;
+			PDF::MultiCell(33,8,Lang::get('printer.quantity'),1,'C',false,1,$x,$y,true,0,false,true,8,'M',false);
+        } else {
+			$y=$y+10;
+			$x=$margin_left;
+			PDF::MultiCell(115,8,Lang::get('printer.description'),1,'C',false,1,$x,$y,true,0,false,true,8,'M',false);
+			
+			$x=$x+115;$y=$y;
+			PDF::MultiCell(32,8,Lang::get('printer.price per unit'),1,'C',false,1,$x,$y,true,0,false,true,8,'M',false);
+			
+			$x=$x+32;$y=$y;
+			PDF::MultiCell(33,8,Lang::get('printer.quantity'),1,'C',false,1,$x,$y,true,0,false,true,8,'M',false);
+		}
 
         $y+=8;
 		$total = 0;
 		//sales order details
 		foreach($sales_order_details  as $key => $row){
 			$x=$margin_left;
-            $x=$x;$y=$y;
-            PDF::MultiCell(50,8,$row->description,1,'L',false,1,$x,$y,true,0,false,true,8,'M',false);
+			$x=$x;$y=$y;
 			
-			$x=$x+50;$y=$y;
-			PDF::MultiCell(45,8,$row->armada_category_name,1,'L',false,1,$x,$y,true,0,false,true,8,'M',false);
+			if($sales_order->type == 'Transport') {
+				PDF::MultiCell(50,8,$row->description,1,'L',false,1,$x,$y,true,0,false,true,8,'M',false);
+				
+				$x=$x+50;$y=$y;
+				PDF::MultiCell(45,8,$row->armada_category_name,1,'L',false,1,$x,$y,true,0,false,true,8,'M',false);
+				
+				$x=$x+45;$y=$y;
+				PDF::MultiCell(20,8,number_format($row->qty,0),1,'R',false,1,$x,$y,true,0,false,true,8,'M',false);
+				
+				$x=$x+20;$y=$y;
+				PDF::MultiCell(32,8,number_format($row->price,2),1,'R',false,1,$x,$y,true,0,false,true,8,'M',false);
+				
+				$x=$x+32;$y=$y;
+				PDF::MultiCell(33,8,number_format($row->subtotal,2),1,'R',false,1,$x,$y,true,0,false,true,8,'M',false);
+				
+			} else {
+				PDF::MultiCell(115,8,$row->description,1,'L',false,1,$x,$y,true,0,false,true,8,'M',false);
+				
+				$x=$x+115;$y=$y;
+				PDF::MultiCell(32,8,number_format($row->price,2),1,'R',false,1,$x,$y,true,0,false,true,8,'M',false);
+				
+				$x=$x+32;$y=$y;
+				PDF::MultiCell(33,8,number_format($row->subtotal,2),1,'R',false,1,$x,$y,true,0,false,true,8,'M',false);
+			}
 			
-			$x=$x+45;$y=$y;
-			PDF::MultiCell(20,8,number_format($row->qty,0),1,'R',false,1,$x,$y,true,0,false,true,8,'M',false);
-			
-			$x=$x+20;$y=$y;
-			PDF::MultiCell(32,8,number_format($row->price,0),1,'R',false,1,$x,$y,true,0,false,true,8,'M',false);
-			
-			$x=$x+32;$y=$y;
-			PDF::MultiCell(33,8,number_format($row->subtotal,2),1,'R',false,1,$x,$y,true,0,false,true,8,'M',false);
 			$y+=8;
 			$total+=$row->subtotal;
 		}
@@ -250,29 +292,29 @@ class CustomerController extends Controller {
 			$total+=$cost->cost;
 		}
 		
-		$x=$margin_left;$y=$y;
-        PDF::MultiCell(147,8,Lang::get('printer.quantity rental price'),1,'R',false,1,$x,$y,true,0,false,true,8,'M',false);
+		$x=$margin_left+107;$y=$y;
+        PDF::MultiCell(40,8,Lang::get('printer.quantity rental price'),1,'R',false,1,$x,$y,true,0,false,true,8,'M',false);
 		
-		$x=$x+147;$y=$y;
+		$x=$x+40;$y=$y;
 		PDF::MultiCell(33,8,number_format($total,2),1,'R',false,1,$x,$y,true,0,false,true,8,'M',false);
 		
-		$x=$margin_left;$y=$y+8;
-        PDF::MultiCell(147,8,Lang::get('printer.down payment'),1,'R',false,1,$x,$y,true,0,false,true,8,'M',false);
+		$x=$margin_left+107;$y=$y+8;
+        PDF::MultiCell(40,8,Lang::get('printer.down payment'),1,'R',false,1,$x,$y,true,0,false,true,8,'M',false);
 		
-		$x=$x+147;$y=$y;
+		$x=$x+40;$y=$y;
 		PDF::MultiCell(33,8,number_format(0,2),1,'R',false,1,$x,$y,true,0,false,true,8,'M',false);
 		
-		$x=$margin_left;$y=$y+8;
-        PDF::MultiCell(147,8,Lang::get('printer.total bill'),1,'R',false,1,$x,$y,true,0,false,true,8,'M',false);
+		$x=$margin_left+107;$y=$y+8;
+        PDF::MultiCell(40,8,Lang::get('printer.total bill'),1,'R',false,1,$x,$y,true,0,false,true,8,'M',false);
 		
-		$x=$x+147;$y=$y;
+		$x=$x+40;$y=$y;
 		PDF::MultiCell(33,8,number_format($total,2),1,'R',false,1,$x,$y,true,0,false,true,8,'M',false);
 		
 		$x=$margin_left;$y=$y+10;
 		PDF::SetXY($x,$y=$y);
 		PDF::Cell(30,8,Lang::get('printer.be regarded').' :',0,0,'L',false,'',0,8,'T','M');
 		$x=$x+35;$y=$y;
-		PDF::MultiCell(120,8,"## ".be_regarded($total)." ##",1,'C',false,1,$x,$y,true,0,false,true,8,'M',false);
+		PDF::MultiCell(120,8,"## ".be_regarded($total)."".Lang::get("printer.rupiah")." ##",1,'C',false,1,$x,$y,true,0,false,true,8,'M',false);
 		
 		PDF::SetFont('Helvetica','B',8,'','false');
 		$x=$margin_left;$y=$y+10;
@@ -280,23 +322,39 @@ class CustomerController extends Controller {
 		PDF::Cell(180,10,'Mohon Pembayaran dapat ditransfer ke Rekening',0,0,'C',false,'',0,10,'T','M');
 		
 		if($account_banks) {
-			PDF::SetFont('Helvetica','BI',8,'','false');
+			PDF::SetFont('Helvetica','BI',7,'','false');
 			$y = $y + 5;
 			foreach($account_banks as $key => $account) {
 				PDF::SetXY($x,$y);
-				PDF::Cell(180,10,$account->name.' '.$account->account_no.' a.n '.$account->account_name,0,0,'C',false,'',0,10,'T','M');
+				PDF::Cell(180,5,$account->name.' '.$account->account_no.' a.n '.$account->account_name,0,0,'C',false,'',0,5,'T','M');
 				$y = $y + 5;
 			}
 		}
 		
-		PDF::SetXY($x,$y=$y);
+		/*PDF::SetXY($x,$y=$y);
 		PDF::SetFont('Helvetica','',8,'','false');	
 		PDF::Cell(180,10,'( Bukti transaksi harap dikirim ke email office@luthansa.co.id atau luthansagroup@gmail.com )',0,0,'C',false,'',0,10,'T','M');
+		*/
 		
-		$y=$y+10;
+		/*$y=$y+10;
 		$x=$margin_left;
         PDF::MultiCell(180,8,'Sesuai dengan ketentuan yang berlaku, PT Anther Prima Persada mengatur bahwa Invoice ini terlah ditandatangani secara elektronik sehingga tidak diperlukan tanda tangan basah pada Invoice ini.',1,'C',false,1,$x,$y,true,0,false,true,8,'M',false);
+		*/
 		
+		PDF::SetXY($x+40,$y=$y+3);
+		PDF::SetFont('Helvetica','',6,'','false');	
+		PDF::Cell(160,5,'* Pembayaran dengan Cek/Bilyet Giro/Transfer dianggap sah apabila telah dicairkan ke rekening tersebut.',0,0,'L',false,'',0,10,'T','M');
+		
+		PDF::SetXY($x+40,$y=$y+3);
+		PDF::Cell(160,5,'* Dalam pembayaran agar mencantumkan secara jelas tanggal pemakaian dan nomor invoice yang dibayar.',0,0,'L',false,'',0,10,'T','M');
+		
+		PDF::SetXY($x+40,$y=$y+3);
+		PDF::Cell(160,5,'* Bukti Transfer harap dikirim ke email : office@luthansa.co.id atau luthansagroup@gmail.com.',0,0,'L',false,'',0,10,'T','M');
+		
+		PDF::SetXY($x+40,$y=$y+3);
+		PDF::Cell(160,5,'* Pemakaian melebihi batas waktu yang ditentukan akan dikenakan OVERTIME CHARGE, sesuai dengan ketentuan.',0,0,'L',false,'',0,10,'T','M');
+		
+		PDF::SetFont('Helvetica','',8,'','false');	
 		PDF::SetXY($x,$y=$y+10);
 		PDF::Cell(180,10,Lang::get('printer.regards'),0,0,'L',false,'',0,10,'T','M');
 		PDF::SetXY($x,$y=$y+5);
@@ -308,7 +366,7 @@ class CustomerController extends Controller {
 		PDF::SetFont('Helvetica','',8,'','false');	
 		PDF::Cell(30,10,Setting::get('company_signature_name'),0,0,'C',false,'',0,10,'T','M');
 		
-		/* Disclamer /**/
+		/* Disclamer 
         $x=$x;$y=$y;
         PDF::SetLineStyle(array('width'=>0.3,'color'=>array(0,0,0)));
         PDF::Line($x+40,$y+2,150,$y+2); //top 
@@ -341,12 +399,12 @@ class CustomerController extends Controller {
 		
 		PDF::SetXY($x+40,$y=$y+3);
 		PDF::Cell(90,10,"  - Medium Bus Rp 250.000/JamB",0,0,'L',false,'',0,10,'T','M');
-		/* Disclamer /**/
+		Disclamer /**/
 		
 		/* QR CODE /**/
 		
 		$style = array(
-			'border' => 2,
+			'border' => 0,
 			'vpadding' => 'auto',
 			'hpadding' => 'auto',
 			'fgcolor' => array(0,0,0),
@@ -354,12 +412,22 @@ class CustomerController extends Controller {
 			'module_width' => 1, // width of a single module in points
 			'module_height' => 1 // height of a single module in points
 		);
+
+        // QRCODE,L : QR-CODE Low error correction
+        PDF::write2DBarcode(url('/sales-order/feed/invoice/'.Crypt::encrypt($id)), 'QRCODE,L', $x+153, $y-19, 30, 30, $style, 'N');
+        //PDF::write2DBarcode(url('/sales-order/feed/invoice/'.Crypt::encrypt($id)), 'QRCODE,L', $x+153, $y-19, 24, 24, $style, 'N');
+        /* QR CODE /**/
 		
-		// QRCODE,L : QR-CODE Low error correction
-		PDF::write2DBarcode(url('/sales-order/feed/invoice/'.Crypt::encrypt($id)), 'QRCODE,L', $x+153, $y-19, 28, 28, $style, 'N');
-		/* QR CODE /**/
+		// Footer
+		PDF::SetAutoPageBreak(TRUE, 0);
+		PDF::SetY(273,true,true);
 		
-		PDF::Output('invoice.pdf','D');
+		$x = $margin_left;
+		PDF::Cell(180,10,'Sesuai dengan ketentuan yang berlaku, PT Anther Prima Persada mengatur bahwa Invoice ini telah ditandatangani secara elektronik sehingga tidak diperlukan tanda tangan basah pada Invoice ini.', 1, false, 'C', 1, '', 1, false, 'T', 'M');
+		PDF::Image(asset('vendor/luthansa/img/footer.png'), 0, 287, 220, 10, 'PNG', url('/'), '', true, 100, '', false, false, 0, false, false, false);
+		
+				
+		PDF::Output($sales_order->number.".pdf",$output);
 	}
 	
 	public function sales_invoice(SalesInvoice $sales_invoice) {
