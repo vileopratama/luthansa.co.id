@@ -9,11 +9,11 @@
         "laravel/framework": "5.2.*",
 		"caffeinated/modules": "~2.0",
         "caffeinated/themes": "~2.0",
-		"artesaos/seotools": "v0.7.3.6",
-		"laravelcollective/html": "~5.0",
+		"kyslik/column-sortable": "~5.0",
+		"laravelcollective/html": "^5.2.0",
+		"gloudemans/shoppingcart": "^2.2",
 		"elibyy/tcpdf-laravel": "5.2.0",
-		"davejamesmiller/laravel-breadcrumbs": "^3.0",
-		"anakadote/laravel-5-image-manager": "dev-master"
+        "artesaos/seotools": "^0.10.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

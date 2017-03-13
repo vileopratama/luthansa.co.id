@@ -45,7 +45,6 @@ return [
 	'pick-up date' => "Tgl Penjemputan",
 	'pick-up point' => "Alamat Penjemputan",
 	'please transfer' => "Mohon untuk transfer ",
-	'process' => "Process",
 	'quantity total' => "Jml yang dipesan",
 	'queue invoice' => "Invoice Luthansa Group, Tour & Transport",
 	'queue number' => "Nomor Antrian",
