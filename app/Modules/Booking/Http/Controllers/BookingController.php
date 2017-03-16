@@ -143,7 +143,8 @@ class BookingController extends Controller {
 				if(!Auth::check()) {
 					$password_decrypt = substr( md5(rand()),0,8);
 					$customer = new Customer();
-					$customer->name =  $request->get('name');
+					$customer->name =  !empty($request->get('company_name')) ? $request->get('name') : $request->get('company_name');
+                    $customer->contact_person = $request->get('name');
 					$customer->email = $request->get('email');
 					$customer->mobile_number = $request->get('mobile_number');
 					$customer->password = bcrypt($password_decrypt); 
