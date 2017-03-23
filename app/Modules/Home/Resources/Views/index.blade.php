@@ -1,4 +1,4 @@
-@extends('luthansa::main')
+ret@extends('luthansa::main')
 @section('content')
 <!-- TOP BANNER -->
 <div class="top-baner bg-blue">
@@ -8,10 +8,10 @@
 				<div class="col-md-12">
 					<img src="{!! asset('themes/luthansa/assets/img/home/header.jpg') !!}" class="img-responsive" />
 				</div>
-				<div class="col-xs-12 col-md-12" >
-					 <iframe style="width:100%;height:300px;background-color:#000"
+				<div class="col-xs-12 col-md-12" style="height:300px">
+					 <!--<iframe style="width:100%;height:300px;background-color:#000"
 						src="https://www.youtube.com/embed/V2AS-zXV2Hg?autoplay=1&loop=1">
-					</iframe> 
+					</iframe>--> 
 				</div>
 			</div>
 		</div>
