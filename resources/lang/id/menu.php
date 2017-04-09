@@ -2,6 +2,7 @@
  return [
 	'about us' => 'About Us',
 	'big bus 40/59 seats' => 'Big Bus 40/59 seats',
+	'big bus 59 seats' => "Big Bus 59 seats",
 	'change password' => 'Change Password',
 	'elf long 19 seats' => 'Elf Long 19 seats',
 	'elf long 21 seats' => 'Elf Long 21 seats',
