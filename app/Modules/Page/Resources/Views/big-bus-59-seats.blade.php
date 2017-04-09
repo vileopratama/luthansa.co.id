@@ -75,10 +75,7 @@
 							<img data-u="image" src="{{ App\Classes\Img::resize('/shared/img/big-bus-59/9.jpg', 800, 465) }}" />
 							<img data-u="thumb" src="{{ App\Classes\Img::resize('/shared/img/big-bus-59/9.jpg', 225, 225) }}" />
 						</div>
-						<div data-p="144.50" style="display: none;">
-							<img data-u="image" src="{{ App\Classes\Img::resize('/shared/img/big-bus-59/10.jpg', 800, 465) }}" />
-							<img data-u="thumb" src="{{ App\Classes\Img::resize('/shared/img/big-bus-59/10.jpg', 225, 225) }}" />
-						</div>
+						
 						
 					</div>
 					<!-- Thumbnail Navigator -->

@@ -1,0 +1,31 @@
+body{
+	font-size:9pt;
+}
+header{
+	margin-top : 20px;
+}
+#header-logo {
+	padding:5px;
+	margin-bottom:10px;
+}
+header p{
+	
+	margin-bottom:2px;
+	
+}
+.table {
+	
+}
+.no-border th,.no-border td { 
+    border-top: none !important;
+    border-left: none !important;
+	
+
+}
+
+.no-padding>tbody>tr>th,.no-padding>tbody>tr>td {
+	padding : 2px;
+}
+.uppercase {
+	text-transform:uppercase;
+}
